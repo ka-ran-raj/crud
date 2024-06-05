@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gatepass System</title>
+  <style>
+    body {
+      font-family: 'Helvetica', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; 
+      background-color: #f0f0f0;
+      color: #333333;
+      overflow: hidden;
+    }
+
+    .content-wrapper {
+      overflow-y: auto;
+      width: 320px; 
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #ffffff;
+      padding-left: 10px; 
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+    }
+
+    header {
+      font-size: 24px;
+      margin-bottom: 16px;
+      text-align: center;
+      color: #3b5998;
+    }
+
+    .form {
+      display: none;
+      transition: all 0.2s ease;
+    }
+
+    .active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(5px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    input,
+    .checkbox {
+      margin-top: 16px; 
+      width: calc(100% - 36px); 
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px; 
+      color: #333333;
+      background-color: #e9e9e9;
+    }
+
+    input[type="submit"] {
+  margin: 20px auto 0; 
+  background-color: #5fe75c;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 15px; 
+  cursor: pointer;
+  padding-left: 20px;
+  padding-right: 50px;
+  transition: background-color 0.2s ease;
+  display: block; 
+}
+
+
+    input[type="submit"]:hover {
+      background-color: #5fe75c;
+    }
+
+    .checkbox label {
+      font-size: 12px;
+      color: #888888;
+    }
+
+    .toggle-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin: 16px 0; 
+    }
+
+    .toggle-buttons button {
+      width: 30%;
+      padding: 10px;
+      font-size: 14px; 
+      background-color: #5fe75c;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .toggle-buttons button:hover {
+      background-color: #5fe75c;
+    }
+
+    .navbar {
+      width: 25%;
+      background-color: #ffffff;
+      padding: 20px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: #3b5998;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      gap: 18px;
+    }
+
+    .navbar .nav-links a {
+      color: #333333;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .navbar .nav-links a:hover {
+      color: #3b5998;
+    }
+
+    .gatepasses-list {
+      display: none;
+      flex-direction: column;
+      margin-top: 16px; 
+    }
+
+    .gatepasses-list.active {
+      display: flex;
+    }
+
+    .gatepass-item {
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <section class="container">
+      <div class="form signup active">
+        <header>Gatepass System</header>
+        <form action="/register" method="post">
+          <input type="text" placeholder="Pass Number" name="passNumber" required>
+          <input type="text" placeholder="Visitor Name" name="visitorName" required>
+          <input type="text" placeholder="Purpose of Visit" name="visitPurpose" required>
+          <input type="time" placeholder="Entry Time" id="entryTime" name="entryTime" required>
+          <input type="number" placeholder="Number of Hours" id="numHours" name="numHours" required>
+          <input type="time" placeholder="Exit Time" id="exitTime" name="exitTime" readonly>
+          <input type="submit" value="Register">
+        </form>
+      </div>
+
+      <div class="toggle-buttons">
+        <button id="update-button">Update</button>
+        <button id="delete-button">Delete</button>
+        <button id="view-button">View</button>
+      </div>
+
+      <div class="form update">
+        <header>Update Gatepass</header>
+        <form action="/update" method="post">
+          <input type="text" placeholder="Pass Number" name="passNumber" required>
+          <input type="text" placeholder="New Visitor Name" name="newVisitorName" required>
+          <input type="text" placeholder="New Purpose" name="newVisitPurpose" required>
+          <input type="time" placeholder="New Entry Time" id="newEntryTime" name="newEntryTime" required>
+          <input type="number" placeholder="Number of Hours" id="newNumHours" name="newNumHours" required>
+          <input type="time" placeholder="New Exit Time" id="newExitTime" name="newExitTime" readonly>
+          <input type="submit" value="Update">
+        </form>
+      </div>
+
+      <div class="form delete">
+        <header>Delete Gatepass</header>
+        <form action="/delete" method="post">
+          <input type="text" placeholder="Pass Number" name="passNumber" required>
+          <input type="submit" value="Delete">
+        </form>
+      </div>
+
+      <div class="gatepasses-list">
+        <header>Registered Gatepasses</header>
+        <div id="gatepasses-container"></div>
+      </div>
+    </section>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const updateButton = document.getElementById('update-button');
+      const deleteButton = document.getElementById('delete-button');
+      const viewButton = document.getElementById('view-button');
+      const forms = document.querySelectorAll('.form');
+      const gatepassesList = document.querySelector('.gatepasses-list');
+      const gatepassesContainer = document.getElementById('gatepasses-container');
+
+      function calculateExitTime(entryTime, numHours) {
+        const [hours, minutes] = entryTime.split(':').map(Number);
+        const entryDate = new Date();
+        entryDate.setHours(hours, minutes);
+        entryDate.setHours(entryDate.getHours() + Number(numHours));
+        return entryDate.toTimeString().slice(0, 5);
+      }
+
+      function setupEntryAndExitTimes(entryTimeInput, numHoursInput, exitTimeInput) {
+        numHoursInput.addEventListener('input', function() {
+          const entryTime = entryTimeInput.value;
+          const numHours = this.value;
+          if (entryTime && numHours) {
+            exitTimeInput.value = calculateExitTime(entryTime, numHours);
+          }
+        });
+      }
+
+      const signupForm = document.querySelector('.form.signup form');
+      setupEntryAndExitTimes(signupForm.querySelector('#entryTime'), signupForm.querySelector('#numHours'), signupForm.querySelector('#exitTime'));
+
+      updateButton.addEventListener('click', function() {
+        forms.forEach(form => form.classList.remove('active'));
+        gatepassesList.classList.remove('active');
+        document.querySelector('.form.update').classList.add('active');
+        const updateForm = document.querySelector('.form.update form');
+        setupEntryAndExitTimes(updateForm.querySelector('#newEntryTime'), updateForm.querySelector('#newNumHours'), updateForm.querySelector('#newExitTime'));
+      });
+
+      deleteButton.addEventListener('click', function() {
+        forms.forEach(form => form.classList.remove('active'));
+        gatepassesList.classList.remove('active');
+        document.querySelector('.form.delete').classList.add('active');
+      });
+
+      viewButton.addEventListener('click', async function() {
+        forms.forEach(form => form.classList.remove('active'));
+        gatepassesList.classList.add('active');
+        try {
+          const response = await fetch('/view');
+          const gatepasses = await response.json();
+          const currentDate = new Date().toLocaleDateString();
+          gatepassesContainer.innerHTML = gatepasses.map(gatepass => `
+            <div class="gatepass-item">
+              <p><strong>Pass Number:</strong> ${gatepass.passNumber}</p>
+              <p><strong>Visitor Name:</strong> ${gatepass.visitorName}</p>
+              <p><strong>Purpose:</strong> ${gatepass.visitPurpose}</p>
+              <p><strong>Entry Time:</strong> ${gatepass.entryTime}</p>
+              <p><strong>Exit Time:</strong> ${gatepass.exitTime}</p>
+              <p><strong>Date:</strong> ${currentDate}</p>
+            </div>
+          `).join('');
+        } catch (error) {
+          console.error("Error fetching gatepasses:", error);
+          gatepassesContainer.innerHTML = '<p>Error fetching gatepasses</p>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
